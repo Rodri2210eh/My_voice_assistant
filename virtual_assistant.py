@@ -5,12 +5,9 @@ import urllib.request
 import json
 import datetime
 import wikipedia
+import play_spotify
 
-# name of the virtual assistant
-name = 'cortana'
-
-# your api key
-key = 'YOUR_API_KEY_HERE'
+name = 'Lucia'
 
 # the flag help us to turn off the program
 flag = 1
@@ -21,6 +18,7 @@ engine = pyttsx4.init()
 
 # get voices and set the first of them
 voices = engine.getProperty('voices')
+print(voices)
 engine.setProperty('voice', voices[0].id)
 
 # editing default configuration
@@ -34,27 +32,28 @@ def talk(text):
 def listen():
     flag = 1
     try:
+        sr.Microphone.list_microphone_names()
         with sr.Microphone() as source:
             print("Escuchando...")
+            listener.adjust_for_ambient_noise(source, duration=1)
             voice = listener.listen(source)
             rec = listener.recognize_google(voice, language='es-ES')
             rec = rec.lower()
-            
-            if name in rec:
-                rec = rec.replace(name, '')
-                flag = run(rec)
-            else:
-                talk("Vuelve a intentarlo, no reconozco: " + rec)
+            flag = run(rec)
     except:
         pass
     return flag
 
 def run(rec):
-    
-    if 'reproduce' in rec:
-        music = rec.replace('reproduce', '')
+    if 'reproduce' in rec or 'pon' in rec:
+        music = rec.replace('reproduce', '') or rec.replace('pon', '')
         talk('Reproduciendo ' + music)
-        pywhatkit.playonyt(music)
+        try:
+            song, author = music.split('de', 2)
+            author, noAuthor = author.split('sin', 2)
+            play_spotify.main(song, author, noAuthor)
+        except:
+            pywhatkit.playonyt(music)
     elif 'hora' in rec:
         hora = datetime.datetime.now().strftime('%I:%M %p')
         talk("Son las " + hora)
@@ -63,12 +62,13 @@ def run(rec):
         wikipedia.set_lang("es")
         info = wikipedia.summary(order, 1)
         talk(info)
-    elif 'exit' in rec:
+    elif 'salir' in rec or 'cerrar' in rec or 'apagar' in rec:
         flag = 0
         talk("Saliendo...")
     else:
         talk("Vuelve a intentarlo, no reconozco: " + rec)
     return flag
 
+talk("Bienvenido mi nombre es Lucía, tu asistente virtual")
 while flag:
     flag = listen()
