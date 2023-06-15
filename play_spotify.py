@@ -2,9 +2,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 import pprint
 import webbrowser
-from time import sleep
 import config
-import pyautogui
 
 def main(searchSong, author = '', noAuthor =  ''):
     client_id = config.client_id

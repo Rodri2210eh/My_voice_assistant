@@ -1,13 +1,13 @@
 import speech_recognition as sr
 import pyttsx4
 import pywhatkit
-import urllib.request
-import json
+import common_functions
 import datetime
 import wikipedia
 import play_spotify
+import my_playlists_spotify
 
-name = 'Lucia'
+name = 'lucía'
 
 # the flag help us to turn off the program
 flag = 1
@@ -39,21 +39,33 @@ def listen():
             voice = listener.listen(source)
             rec = listener.recognize_google(voice, language='es-ES')
             rec = rec.lower()
+            rec = rec.replace(name, '')
             flag = run(rec)
     except:
         pass
     return flag
 
 def run(rec):
+    print(rec)
     if 'reproduce' in rec or 'pon' in rec:
-        music = rec.replace('reproduce', '') or rec.replace('pon', '')
-        talk('Reproduciendo ' + music)
-        try:
-            song, author = music.split('de', 2)
-            author, noAuthor = author.split('sin', 2)
-            play_spotify.main(song, author, noAuthor)
-        except:
-            pywhatkit.playonyt(music)
+        musicReplace = ['reproduce', 'pon']
+        music = replaceList(musicReplace, rec)
+        music = common_functions.clean_input(music)
+        print(music)
+        if 'playlist' in music or 'playlists' in music or 'la playlist' in music or 'mi playlist' in music:
+            playlistReplace = ['playlist', 'playlists', 'mi playlist', 'la playlist']
+            playlist = replaceList(playlistReplace, music)
+            playlist = common_functions.clean_input(playlist)
+            talk('Reproduciendo ' + playlist)
+            my_playlists_spotify.main(playlist)
+        else:
+            try:
+                talk('Reproduciendo ' + music)
+                song, author = music.split('de', 2)
+                author, noAuthor = author.split('sin', 2)
+                play_spotify.main(song, author, noAuthor)
+            except:
+                pywhatkit.playonyt(music)
     elif 'hora' in rec:
         hora = datetime.datetime.now().strftime('%I:%M %p')
         talk("Son las " + hora)
@@ -69,6 +81,12 @@ def run(rec):
         talk("Vuelve a intentarlo, no reconozco: " + rec)
     return flag
 
+def replaceList(elementReplace, replaceString):
+    for i in range (0, len(elementReplace)):
+        replaceString = replaceString.replace(elementReplace[i], '')
+    return replaceString
+
 talk("Bienvenido mi nombre es Lucía, tu asistente virtual")
 while flag:
     flag = listen()
+    
