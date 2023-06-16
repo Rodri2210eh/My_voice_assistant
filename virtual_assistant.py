@@ -6,6 +6,7 @@ import datetime
 import wikipedia
 import play_spotify
 import my_playlists_spotify
+import pyjokes
 
 name = 'lucía'
 
@@ -74,6 +75,9 @@ def run(rec):
         wikipedia.set_lang("es")
         info = wikipedia.summary(order, 1)
         talk(info)
+    elif 'chiste' in rec:
+        chiste = pyjokes.get_joke("es")
+        talk(chiste)
     elif 'salir' in rec or 'cerrar' in rec or 'apagar' in rec:
         flag = 0
         talk("Saliendo...")
