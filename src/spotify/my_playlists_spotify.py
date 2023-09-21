@@ -3,7 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import webbrowser
 from unicodedata import normalize
-from common_functions import clean_input
+from common.common_functions import clean_input
 from time import sleep
 import pyautogui
 

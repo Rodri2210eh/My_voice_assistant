@@ -1,12 +1,13 @@
 import speech_recognition as sr
 import pyttsx4
 import pywhatkit
-import common_functions
+import common.common_functions as common_functions
 import datetime
 import wikipedia
-import play_spotify
-import my_playlists_spotify
+import spotify.play_spotify as play_spotify
+import spotify.my_playlists_spotify as my_playlists_spotify
 import pyjokes
+import conectOpenAI
 
 name = 'lucía'
 
@@ -82,7 +83,8 @@ def run(rec):
         flag = 0
         talk("Saliendo...")
     else:
-        talk("Vuelve a intentarlo, no reconozco: " + rec)
+        message = conectOpenAI.processQuestion(rec)
+        talk(message)
     return flag
 
 def replaceList(elementReplace, replaceString):
